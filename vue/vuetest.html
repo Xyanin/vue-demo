@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>vue</title>
+  <link rel="stylesheet" type="text/css" href="vue.css">
+	<script type="text/javascript" src='vue.js'></script>
+</head>
+<body>
+
+	<h2>实现文字反转，添加至列表，切能独立删除</h2>
+  <div id="app">
+		<p>new: {{ newTodo }}</p>
+		<input v-model="newTodo" debounce="500" v-on:keyup.enter="addTodo">
+		<button v-on:click="reverseMessage">R</button>
+		<ul>
+      <li v-for="todo in todos">
+        <span>{{ todo.text }}</span>
+        <button v-on:click="removeTodo($index)">X</button>
+      </li>
+    </ul>
+  </div>
+
+	<h2>实现输入框和文字双向绑定</h2>
+  <div id="test">
+    <p>hello {{{ name }}}!</p>
+    <input v-model='name'>
+  </div>
+
+	<h2>数组遍历</h2>
+  <div id="demo">
+    <p>{{fullName}}</p>
+  </div>
+  <ul id="example-2">
+    <li v-for="item in items">
+      {{ $index }} .{{ $key }} {{ item }}
+    </li>
+  </ul>
+
+	<h2>实现文字和单/多选框双向绑定</h2>
+  <div id="check">
+	  <input type="radio" id="one" value="One" v-model="picked">
+	  <label for="one">One</label>
+	  <br>
+	  <input type="radio" id="two" value="Two" v-model="picked">
+	  <label for="two">Two</label>
+	  <br>
+	  <span>Picked: {{ picked }}</span>
+	  <p>Pick: {{ toggle }}</p>
+	  <input type="radio" v-model="picked" value="a">
+	  <input type="checkbox" v-model="toggle">
+
+		<h2>实现文字和下拉框双向绑定</h2>
+	  <select v-model="selected">
+	    <option value="abc">ABC</option>
+	  </select>
+  	<p>select: {{ selected }}</p>
+  </div>
+
+	<h2>实现数组和输入框双向绑定</h2>
+	<!-- 子组件模板 -->
+	<template id="child-template">
+	  <input v-model="msg">
+	  <button v-on:click="notify">Dispatch Event</button>
+	</template>
+	<!-- 父组件模板 -->
+	<div id="events-example">
+	  <p>Messages: {{ messages | json }}</p>
+	  <child></child>
+	</div>
+
+<script>
+	Vue.component('child', {
+	  template: '#child-template',
+	  data: function () {
+	    return { msg: 'hello' }
+	  },
+	  methods: {
+	    notify: function () {
+	      if (this.msg.trim()) {
+	        this.$dispatch('child-msg', this.msg)
+	        this.msg = ''
+	      }
+	    }
+	  }
+	})
+
+	// 初始化父组件
+	// 将收到消息时将事件推入一个数组
+	var parent = new Vue({
+	  el: '#events-example',
+	  data: {
+	    messages: []
+	  },
+	  // 在创建实例时 `events` 选项简单地调用 `$on`
+	  events: {
+	    'child-msg': function (msg) {
+	      // 事件回调内的 `this` 自动绑定到注册它的实例上
+	      this.messages.push(msg)
+	    }
+	  }
+	})
+
+  new Vue({
+    el:'#check',
+    data: {
+      picked:'',
+      toggle:'',
+      selected:''
+    }
+  })
+
+  new Vue({
+    el: '#app',
+    data: {
+      newTodo: 'sassa',
+      todos: [
+        { text: 'Add some todos' }
+      ]
+    },
+    methods: {
+      addTodo: function () {
+        var text = this.newTodo.trim()
+        if (text) {
+          this.todos.push({ text: text })
+          this.newTodo = ''
+        }
+      },
+      removeTodo: function (index) {
+        this.todos.splice(index, 1)
+      },
+      reverseMessage: function () {
+        this.newTodo= this.newTodo.split('').reverse().join('')
+      }
+    }
+  })
+
+  new Vue({
+    el: '#test',
+    data: {
+      name: 'yanin'
+    }
+  })
+
+  var vm = new Vue({
+    el: '#demo',
+    data: {
+      firstName: 'Foo',
+      lastName: 'Bar',
+      fullName: 'Foo Bar',
+      ok:true
+    },
+    computed: {
+      fullName: {
+        // getter
+        get: function () {
+          return this.firstName + ' ' + this.lastName
+        },
+        // setter
+        set: function (newValue) {
+          var names = newValue.split(' ')
+          this.firstName = names[0]
+          this.lastName = names[names.length - 1]
+        }
+      }
+    }
+  })
+
+	var example2 = new Vue({
+	  el: '#example-2',
+	  data: {
+	    items:{
+	      message2: 'Foo' ,
+	      message: 'Br'
+	     }
+	  }
+	})
+  </script>
+</body>
+</html>
